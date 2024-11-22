@@ -1,5 +1,6 @@
 import Image from "next/image";
 const Dashboard = () => {
+  function HandleCompress() {}
   return (
     <div>
       <div className="flex gap-5 items-center flex-col mt-10">
@@ -58,7 +59,10 @@ const Dashboard = () => {
               <span className="loading loading-spinner"></span>
             </button> */}
 
-            <button className="btn btn-outline btn-success">
+            <button
+              onClick={HandleCompress}
+              className="btn btn-outline btn-success"
+            >
               {/* <Compress className="mr-2" /> */}
               Compress Video
             </button>

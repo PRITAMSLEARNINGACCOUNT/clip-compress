@@ -1,3 +1,64 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.pl,
+.pl__worm {
+  animation-duration: 1.5s; /* Increased speed */
+  animation-iteration-count: infinite;
+}
+.pl {
+  animation-name: bump;
+  animation-timing-function: linear;
+  width: 8em;
+  height: 8em;
+}
+/* .pl__ring {
+  stroke: hsla(var(--hue), 10%, 10%, 0.1);
+  transition: stroke 0.3s;
+} */
+.pl__worm {
+  animation-name: worm;
+  animation-timing-function: cubic-bezier(0.42, 0.17, 0.75, 0.83);
+}
+.pl__ring {
+  stroke: hsla(var(--hue), 10%, 90%, 0.1);
+}
+
+@keyframes bump {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(2%, 5%);
+  }
+  30% {
+    transform: translate(-5%, -3%);
+  }
+  50% {
+    transform: translate(4%, 6%);
+  }
+  70% {
+    transform: translate(-3%, -4%);
+  }
+  90% {
+    transform: translate(2%, 2%);
+  }
+}
+@keyframes worm {
+  from {
+    stroke-dashoffset: 10;
+  }
+  25% {
+    stroke-dashoffset: 295;
+  }
+  50% {
+    stroke-dashoffset: 600;
+  }
+  75% {
+    stroke-dashoffset: 895;
+  }
+  to {
+    stroke-dashoffset: 1165;
+  }
+}

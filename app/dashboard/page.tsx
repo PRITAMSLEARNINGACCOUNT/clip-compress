@@ -1,6 +1,35 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
+import Loader from "@/components/Loader";
 const Dashboard = () => {
-  function HandleCompress() {}
+  const [File, setFile] = useState<File | null>(null);
+  const [Encoding, setEncoding] = useState<string>("H.264");
+  const [Format, setFormat] = useState<string>("MP4");
+  const [Loading, setLoading] = useState<boolean>(false);
+  async function HandleCompress() {
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    console.log(File, Encoding, Format);
+    if (File?.type.includes("video")) {
+      if (File.size > MAX_FILE_SIZE) {
+        console.log("File too large");
+        return;
+      }
+      const formData = new FormData();
+      formData.append("File", File);
+      formData.append("Encoding", Encoding);
+      formData.append("Format", Format);
+
+      const response = await fetch("/api/Video_Upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log(data);
+    } else {
+      console.log("Invalid File");
+    }
+  }
   return (
     <div>
       <div className="flex gap-5 items-center flex-col mt-10">
@@ -32,6 +61,9 @@ const Dashboard = () => {
               Select The Video
             </label>
             <input
+              onChange={(e) => {
+                setFile(e.target.files![0]);
+              }}
               name="VideoFile"
               id="VideoFile"
               type="file"
@@ -40,6 +72,9 @@ const Dashboard = () => {
           </div>
           <div className="flex gap-2 w-full">
             <select
+              onChange={(e) => {
+                setFormat(e.target.value);
+              }}
               defaultValue={"MP4"}
               className="select select-bordered w-[50%]"
             >
@@ -47,6 +82,9 @@ const Dashboard = () => {
               <option>MKV</option>
             </select>
             <select
+              onChange={(e) => {
+                setEncoding(e.target.value);
+              }}
               defaultValue={"H.264"}
               className="select select-bordered w-[50%]"
             >
@@ -59,6 +97,7 @@ const Dashboard = () => {
               <span className="loading loading-spinner"></span>
             </button> */}
 
+            {/* <Loader /> */}
             <button
               onClick={HandleCompress}
               className="btn btn-outline btn-success"

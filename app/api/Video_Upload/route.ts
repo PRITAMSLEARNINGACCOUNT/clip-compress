@@ -47,6 +47,17 @@ export async function POST(request: NextRequest) {
     const FileBytes = await file.arrayBuffer();
     const FileBuffer = Buffer.from(FileBytes);
 
+    console.log("Encoding:", Encoding);
+    console.log("Format:", Format);
+
+    const transformationFormat = Encoding.includes("H.264")
+      ? Format.toLowerCase()
+      : "mkv";
+    const videoCodec = Encoding.includes("H.264") ? "vc_h264" : "vc_hevc";
+
+    console.log("Transformation Format:", transformationFormat);
+    console.log("Video Codec:", videoCodec);
+
     const result = await new Promise<CloudinaryUploadResult>(
       (resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
@@ -56,8 +67,8 @@ export async function POST(request: NextRequest) {
             eager: [
               {
                 quality: "auto",
-                fetch_format: Format.toLowerCase(),
-                encoding: Encoding.toLowerCase(),
+                fetch_format: "mp4",
+                // video_codec: videoCodec,
               },
             ],
             eager_async: false,
@@ -72,14 +83,38 @@ export async function POST(request: NextRequest) {
         uploadStream.end(FileBuffer);
       }
     );
+    console.log("Cloudinary Response:", result);
+
+    if (!result || !result.public_id) {
+      console.error("Invalid Cloudinary response:", result);
+      return NextResponse.json(
+        { error: "Video upload failed" },
+        { status: 500 }
+      );
+    }
+
     const { userId } = await auth();
+
+    // Get the compressed size with fallbacks
+    const compressedSize =
+      result.eager?.[0]?.bytes || result.bytes || file.size;
+
     const VideoUploadResult = await prisma.video.create({
       data: {
         userId: userId as string,
         publicId: result.public_id,
         originalSize: file.size.toString(),
-        compressedSize:
-          result.eager?.[0]?.bytes.toString() || result.bytes.toString(),
+        compressedSize: compressedSize.toString(),
+      },
+    });
+    await prisma.user.update({
+      where: {
+        id: userId as string,
+      },
+      data: {
+        Video_Compressed: {
+          increment: 1,
+        },
       },
     });
     return NextResponse.json(VideoUploadResult);

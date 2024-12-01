@@ -4,6 +4,7 @@ import { redirect, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
+import { Cleanup } from "@/app/server/Server_Actions";
 const Navbar = () => {
   const Pathname = usePathname();
   const router = useRouter();
@@ -52,6 +53,7 @@ const Navbar = () => {
           <>
             <li
               onClick={async () => {
+                await Cleanup();
                 await signOut({ redirectUrl: "/" });
                 setPage("/");
               }}

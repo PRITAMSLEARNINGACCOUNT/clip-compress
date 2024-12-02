@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "npx tailwindcss -i ./app/globals.css -o ./app/globals.css && npx prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

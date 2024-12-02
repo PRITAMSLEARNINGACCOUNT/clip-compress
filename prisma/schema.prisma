@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id               String   @unique
+  id               String   @id
   plan             String   @default("free")
   Video_Compressed Int      @default(0)
   createdAt        DateTime @default(now())
@@ -29,4 +29,5 @@ model Video {
   compressedSize String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  URL            String
 }

@@ -15,13 +15,13 @@ export async function getFileSize() {
       id: userId as string,
     },
   });
-  // console.log(user);
+
   const MAX_FILE_SIZE =
-    user?.plan === "Premium"
-      ? 300 * 1024 * 1024
-      : user?.plan === "Premiumm Plus"
-      ? 500 * 1024 * 1024
-      : 55 * 1024 * 1024;
+    user?.plan === "premium"
+      ? 50 * 1024 * 1024
+      : user?.plan === "premium plus"
+        ? 99 * 1024 * 1024
+        : 10 * 1024 * 1024;
   return MAX_FILE_SIZE;
 }
 export async function CreateUser() {
@@ -61,6 +61,7 @@ export async function Cleanup() {
     // console.log(DeleteResult);
     return { success: true, message: "Cleanup Done" };
   } catch (error) {
+    // @typescript-eslint/no-unused-vars
     console.log(error);
     return { success: false, message: "Internal Server Error" };
   } finally {

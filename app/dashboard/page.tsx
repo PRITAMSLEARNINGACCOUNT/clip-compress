@@ -30,7 +30,7 @@ const Dashboard = () => {
         const MAX_FILE_SIZE = await getFileSize();
         if (File?.type.includes("video")) {
           if (File.size > MAX_FILE_SIZE) {
-            console.log("File too large,Upgrade Your Plan");
+            setAlertMessage("File too large,Upgrade Your Plan");
             return;
           }
           const formData = new FormData();
@@ -67,13 +67,7 @@ const Dashboard = () => {
             })
           );
 
-          setVideoURL(
-            getCldVideoUrl({
-              src: data.publicId,
-              width: 1920,
-              height: 1080,
-            })
-          );
+          setVideoURL(data.URL);
           setCompressionRate(
             Math.round(
               (1 - Number(data.compressedSize) / Number(data.originalSize)) *

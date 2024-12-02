@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("File") as File | null;
     const Encoding = formData.get("Encoding") as string;
-    const Format = formData.get("Format") as string;
 
     if (!file) {
       return NextResponse.json({ error: "File not found" }, { status: 400 });
@@ -46,17 +45,9 @@ export async function POST(request: NextRequest) {
 
     const FileBytes = await file.arrayBuffer();
     const FileBuffer = Buffer.from(FileBytes);
+    const videoCodec = Encoding.includes("H.264") ? "h264" : "h265";
 
-    console.log("Encoding:", Encoding);
-    console.log("Format:", Format);
 
-    const transformationFormat = Encoding.includes("H.264")
-      ? Format.toLowerCase()
-      : "mkv";
-    const videoCodec = Encoding.includes("H.264") ? "vc_h264" : "vc_hevc";
-
-    console.log("Transformation Format:", transformationFormat);
-    console.log("Video Codec:", videoCodec);
 
     const result = await new Promise<CloudinaryUploadResult>(
       (resolve, reject) => {
@@ -66,9 +57,7 @@ export async function POST(request: NextRequest) {
             folder: CLOUDINARY_FOLDER,
             eager: [
               {
-                quality: "auto",
-                fetch_format: "mp4",
-                // video_codec: videoCodec,
+                video_codec: videoCodec,
               },
             ],
             eager_async: false,
@@ -83,7 +72,7 @@ export async function POST(request: NextRequest) {
         uploadStream.end(FileBuffer);
       }
     );
-    console.log("Cloudinary Response:", result);
+    // console.log("Cloudinary Response:", result as CloudinaryUploadResult);
 
     if (!result || !result.public_id) {
       console.error("Invalid Cloudinary response:", result);
@@ -105,6 +94,7 @@ export async function POST(request: NextRequest) {
         publicId: result.public_id,
         originalSize: file.size.toString(),
         compressedSize: compressedSize.toString(),
+        URL: String(result.eager?.[0]?.url),
       },
     });
     await prisma.user.update({

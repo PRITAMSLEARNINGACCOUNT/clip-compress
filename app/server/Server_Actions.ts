@@ -103,6 +103,9 @@ export async function UpdatePlan(PlanName: string) {
       },
       data: {
         plan: PlanName.toLowerCase(),
+        Video_Compressed: {
+          set: 0,
+        },
       },
     });
     return { success: true, message: "Plan Updated Successfully" };
